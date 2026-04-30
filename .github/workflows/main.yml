@@ -1,0 +1,43 @@
+name: Build Offline APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install & Build TSX
+      run: |
+        npm install
+        npm run build 
+
+    - name: Install Cordova
+      run: npm install -g cordova
+
+    - name: Compile to APK
+      run: |
+        cordova create myapp com.studio.app "AppEngine"
+        rm -rf myapp/www/*
+        # Ambil hasil build dan masuk ke www
+        cp -r dist/* myapp/www/ || cp -r build/* myapp/www/
+        cd myapp
+        cordova platform add android
+        cordova build android
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: Engine-APK
+        path: myapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        
