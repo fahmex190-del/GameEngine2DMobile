@@ -22,6 +22,9 @@ jobs:
         npm install
         npm run build 
 
+    - name: Senarai Fail (Untuk Siasatan)
+      run: ls -la
+
     - name: Install Cordova
       run: npm install -g cordova
 
@@ -29,8 +32,22 @@ jobs:
       run: |
         cordova create myapp com.studio.app "AppEngine"
         rm -rf myapp/www/*
-        # Ambil hasil build dan masuk ke www
-        cp -r dist/* myapp/www/ || cp -r build/* myapp/www/
+        
+        # Kita suruh mesin check semua kemungkinan nama folder
+        if [ -d "dist" ]; then
+          cp -r dist/* myapp/www/
+          echo "Guna folder: dist"
+        elif [ -d "build" ]; then
+          cp -r build/* myapp/www/
+          echo "Guna folder: build"
+        elif [ -d "out" ]; then
+          cp -r out/* myapp/www/
+          echo "Guna folder: out"
+        else
+          echo "Masih tak jumpa folder! Sila check log 'Senarai Fail'."
+          exit 1
+        fi
+        
         cd myapp
         cordova platform add android
         cordova build android
