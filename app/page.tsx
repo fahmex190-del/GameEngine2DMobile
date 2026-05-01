@@ -2134,17 +2134,10 @@ function GameEngineUI({ project, onBack }: { project: any, onBack: (p: any) => v
               {showScenesMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowScenesMenu(false)}></div>
-                  <div data-scenes-menu className="absolute top-full left-[50%] -translate-x-1/2 mt-1 min-w-[200px] bg-[#1e1e1e] border border-[#333] rounded shadow-2xl z-50 py-1">
+                  <div className="absolute top-full left-[50%] -translate-x-1/2 mt-1 min-w-[200px] bg-[#1e1e1e] border border-[#333] rounded shadow-2xl z-50 py-1">
                     <div className="px-3 py-1 flex items-center justify-between border-b border-[#333] mb-1">
                       <span className="text-[10px] text-[#888] uppercase tracking-wider font-bold">Scenes</span>
-                      <button
-                        onMouseDown={(e) => {
-                          e.preventDefault(); // Prevent input blur before click fires
-                          addScene();
-                        }}
-                        className="text-[#aaa] hover:text-white"
-                        title="Add Scene"
-                      >
+                      <button onClick={addScene} className="text-[#aaa] hover:text-white" title="Add Scene">
                         <Plus size={12} />
                       </button>
                     </div>
@@ -2157,16 +2150,9 @@ function GameEngineUI({ project, onBack }: { project: any, onBack: (p: any) => v
                              onChange={(e) => {
                                setScenes(prev => prev.map(sc => sc.id === s.id ? { ...sc, name: e.target.value } : sc));
                              }}
-                             onBlur={(e) => {
-                               // Only close menu if focus leaves the entire scenes menu area
-                               const related = e.relatedTarget as HTMLElement | null;
-                               if (!related || !related.closest('[data-scenes-menu]')) {
-                                 setShowScenesMenu(false);
-                               }
-                             }}
+                             onBlur={() => setShowScenesMenu(false)}
                              onKeyDown={(e) => {
                                if (e.key === 'Enter') e.currentTarget.blur();
-                               if (e.key === 'Escape') setShowScenesMenu(false);
                              }}
                              autoFocus={activeSceneId === s.id}
                              onClick={(e) => {
